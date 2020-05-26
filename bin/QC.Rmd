@@ -3,27 +3,22 @@ title: "QC Report - NextFlow RNA-Seq run"
 author: "RNA-Seq NF"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 logo: "logo_gallery.png"
-output:
-  epuRate::epurate:
-    toc: TRUE
-    number_sections: FALSE
-    code_folding: "hide"
+output: html_document
 ---
 
 ```{r include = FALSE}
 knitr::opts_chunk$set(echo=FALSE)
 library(rmarkdown)
-library(epuRate)
 ```
 
 ```{r, code = readLines("QC_RNASeq.R"), include=F}
 ```
 
-Rscript -e "rmarkdown::render('QC.Rmd')" -i ~/test/testRNA/output
-
 # Overview - Input samples.
 
-Overview of the input files per sample. If paired-end, both R1 and R2 files are shown.
+Overview of the input files (fastq) per sample. 
+
+For paired-end samples (R1 and R2), the number of R1 and R2 files should be equal.
 
 ```{r, message=F}
   ggplotly(plots$overviewFastq)
@@ -32,7 +27,8 @@ Overview of the input files per sample. If paired-end, both R1 and R2 files are 
 
 # TrimGalore
 
-This overview depicts the number of input reads (R1/R2) present within the given fastq files and the total number of respective reads containing adapter sequences.
+This overview depicts the number of input reads (R1/R2) present within the given fastq files and the total number of respective reads containing any leftover adapter sequences.
+
 
 ```{r, message=FALSE}
 ggplotly(plots$TrimGalore)
@@ -41,6 +37,9 @@ ggplotly(plots$TrimGalore)
 # SortMeRNA
 
 The percentage of (trimmed) reads passing the E-value threshold meaning they have a high-confidence hit against one of the ribosomal databases.
+Typically, these should be <5% of the total (m)RNA reads present within the sample.
+
+High numbers reflect a poor ribosomal RNA isolation prior to sequencing.
 
 ```{r, message=FALSE}
 ggplotly(plots$sortMeRNA)
@@ -48,7 +47,8 @@ ggplotly(plots$sortMeRNA)
 
 # Complexity curves.
 
-Complexity curves depict the ..
+Complexity curves estimate the predicted diversity of the sequenced reads in relation to the number of sequenced reads.
+It represents whether all unique molecules within the sample have been sequenced. If so, the line should flatten.
 
 ```{r, message=FALSE}
 ggplotly(plots$preseq)
@@ -56,11 +56,16 @@ ggplotly(plots$preseq)
 
 # Flagstat
 
+Information on sequencing metrics.
+
 ```{r, message=FALSE, warning=FALSE}
 ggplotly(plots$flagstat)
 ```
 
 # TIN
+
+Transcript Integrity Numbers (TIN) represent the uniform distribution of reads across the gene-bodies of all transcripts.
+This ranges from 0 (no uniformity) to 1 (full uniformity), typical high-quality fresh-frozen experimts should have TIN >60% whilst FFPE samples, due to fragmentation and additional degradation, should see numbers around 40-50%. Low numbers indicate poor quality and fragmented RNA input (or skewed sequencing).
 
 ```{r, message=FALSE, warning=FALSE}
 ggplotly(plots$TIN)

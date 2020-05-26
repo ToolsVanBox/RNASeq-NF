@@ -1,5 +1,7 @@
-# Required packages -------------------------------------------------------
+#!/usr/bin/env Rscript -e "rmarkdown::render('QC.Rmd')"
 
+# Required packages -------------------------------------------------------
+print(getwd())
 # if (!require('pacman', quietly = T)) install.packages('pacman')
 pacman::p_load('optparse', 'futile.logger', 'checkmate', 'pbapply', 'ggplot2', 'plotly', 'tidyr', 'plyr', 'dplyr', 'tibble', 'hues')
 
